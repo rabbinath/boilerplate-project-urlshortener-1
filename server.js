@@ -19,6 +19,16 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+let resObj={};
+app.post('/api/shorturl',function(req,res){
+resObj['original_url']=req.originalUrl();
+resObj['short_url']=req.shorturl();
+
+res.json(resObj);
+
+});
+
+
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
