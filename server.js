@@ -26,12 +26,12 @@ app.get('/api/hello', function(req, res) {
 });
 
 let urlSchema=new mongoose.Schema({
-  orginal:{type:String, required:true},
+  original:{type:String, required:true},
   short:Number
 })
 let Url=mongoose.model('Url',urlSchema)
 
-let url='mongodb+srv://rabbinath:'+process.env.PW+'@cluster0.0zmv9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+let url='mongodb+srv://rabbinath:'+ process.env.PW+'@cluster0.0zmv9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 
 let resObj={};
 app.post('/api/shorturl',bodyParser.urlencoded({ extended: false }),function(req,res){
@@ -44,7 +44,7 @@ Url.findOne({})
      inputShort=result.short+1
    } 
    if(!error){
-     Url.FindOneAndUpdate(
+     Url.findOneAndUpdate(
        {original:inputUrl},
        {original:inputUrl,short:inputShort},
        {new:true,upsert:true},
