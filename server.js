@@ -40,7 +40,13 @@ let Url=mongoose.model('Url',urlSchema)
 let resObj={};
 app.post('/api/shorturl',bodyParser.urlencoded({ extended: false }),function(req,res){
 let inputUrl=req.body['url'];
-  resObj['original_url']=inputUrl;
+let urlRegex=new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi)
+if(!inputUrl.match(urlRegex)){
+  res.json({error:'Invalid URL'})
+  return 
+}
+
+resObj['original_url']=inputUrl;
 let inputShort=1
 Url.findOne({})
   .sort({short:'desc'})
