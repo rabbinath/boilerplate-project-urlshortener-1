@@ -25,13 +25,17 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+let uri='mongodb+srv://rabbinath:'+ process.env.PW +'@cluster0.0zmv9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+mongoose.connect(uri,{useNewUrlParser: true,useUnifiedTopology: true});
+
+
 let urlSchema=new mongoose.Schema({
   original:{type:String, required:true},
   short:Number
 })
 let Url=mongoose.model('Url',urlSchema)
 
-let url='mongodb+srv://rabbinath:'+ process.env.PW+'@cluster0.0zmv9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+
 
 let resObj={};
 app.post('/api/shorturl',bodyParser.urlencoded({ extended: false }),function(req,res){
@@ -39,18 +43,19 @@ resObj['original_url']=req.body['url'];
 let inputShort=1
 Url.findOne({})
   .sort({short:'desc'})
-  .exec((error,result)=>{
-   if(!error && result!=undefinded){
+  .exec((err,result)=>{
+   if(!err &&  (result!=='undefined'|| result!==null)){
      inputShort=result.short+1
    } 
-   if(!error){
+   if(!err){
      Url.findOneAndUpdate(
        {original:inputUrl},
        {original:inputUrl,short:inputShort},
        {new:true,upsert:true},
        (error,saveUrl)=>{
-         if(!error){
+         if(!err){
            resObj['short_url']=saveUrl.short
+           res.json(resObj)
          }
        }
      )
