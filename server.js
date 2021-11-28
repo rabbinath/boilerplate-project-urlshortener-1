@@ -39,7 +39,8 @@ let Url=mongoose.model('Url',urlSchema)
 
 let resObj={};
 app.post('/api/shorturl',bodyParser.urlencoded({ extended: false }),function(req,res){
-resObj['original_url']=req.body['url'];
+let inputUrl=req.body['url'];
+  resObj['original_url']=inputUrl;
 let inputShort=1
 Url.findOne({})
   .sort({short:'desc'})
