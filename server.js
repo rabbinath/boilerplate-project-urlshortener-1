@@ -40,9 +40,11 @@ let Url=mongoose.model('Url',urlSchema)
 let resObj={};
 app.post('/api/shorturl',bodyParser.urlencoded({ extended: false }),function(req,res){
 let inputUrl=req.body['url'];
-let urlRegex=new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi)
+let regx = "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=])"
+//let regx="/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi"
+let urlRegex=new RegExp(regx)
 if(!inputUrl.match(urlRegex)){
-  res.json({error:'Invalid URL'})
+  res.json({error:'invalid url'})
   return 
 }
 
@@ -51,7 +53,7 @@ let inputShort=1
 Url.findOne({})
   .sort({short:'desc'})
   .exec((err,result)=>{
-   if(!err &&  (result!=='undefined'|| result!==null)){
+   if(!err &&  result!==undefined){
      inputShort=result.short+1
    } 
    if(!err){
@@ -60,7 +62,7 @@ Url.findOne({})
        {original:inputUrl,short:inputShort},
        {new:true,upsert:true},
        (error,saveUrl)=>{
-         if(!err){
+         if(!error){
            resObj['short_url']=saveUrl.short
            res.json(resObj)
          }
@@ -74,19 +76,18 @@ Url.findOne({})
 app.get('/api/shorturl/:short_url', function(req, res) {
   let shortURL=req.params.short_url;
   Url.findOne(
-    {short_url:shortURL}
-  ).exec((err,reslt)=>{
-if(!err){
-  
-  res.writeHead(301, { Location: '/api/reslt/'+reslt['original_url'] });
+    {short:shortURL}
+  ,(err,reslt)=>{
+      if (err) throw err;
+
+ //res.json(reslt)
+  //res.writeHead(301, { Location: '/api/shorturl/'+reslt.original });
+  res.writeHead(301, { Location: reslt.original });
   res.end()
-}
 
-  }
+})
+})
 
-
-  res.json({ greeting: 'hello API' });
-});
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
