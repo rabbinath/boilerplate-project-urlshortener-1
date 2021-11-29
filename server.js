@@ -71,6 +71,22 @@ Url.findOne({})
 )
 })
 
+app.get('/api/shorturl/:short_url', function(req, res) {
+  let shortURL=req.params.short_url;
+  Url.findOne(
+    {short_url:shortURL}
+  ).exec((err,reslt)=>{
+if(!err){
+  
+  res.writeHead(301, { Location: '/api/reslt/'+reslt['original_url'] });
+  res.end()
+}
+
+  }
+
+
+  res.json({ greeting: 'hello API' });
+});
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
