@@ -40,7 +40,8 @@ let Url=mongoose.model('Url',urlSchema)
 let resObj={};
 app.post('/api/shorturl',bodyParser.urlencoded({ extended: false }),function(req,res){
 let inputUrl=req.body['url'];
-let regx = "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=])"
+let regx =   "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)"
+//let regx = "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=])"
 //let regx="/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi"
 let urlRegex=new RegExp(regx)
 if(!inputUrl.match(urlRegex)){
@@ -53,7 +54,9 @@ let inputShort=1
 Url.findOne({})
   .sort({short:'desc'})
   .exec((err,result)=>{
-   if(!err &&  result!==undefined){
+
+    if(err) throw err ;
+   if(!err &&  typeof result!=='undefined'){
      inputShort=result.short+1
    } 
    if(!err){
